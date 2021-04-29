@@ -1,2 +1,2 @@
 # Daily_Expenses
-Simple program to get in check home expenses between partners
+Prosty program do obliczania wydatków mieszkaniowych partnerów
