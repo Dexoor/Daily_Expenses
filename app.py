@@ -1,7 +1,11 @@
+import json
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from datetime import date
 row1 = [0]
 row2 = [0]
+today = date.today()
+current_month = today.strftime('%B')
+current_year = today.strftime('%Y')
 
 
 class Ui_MainWindow(object):
@@ -85,16 +89,16 @@ class Ui_MainWindow(object):
         self.Value1.setAlignment(
             QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.Value1.setObjectName("Value1")
-        self.Value1.returnPressed.connect(UpdateResult1)
+        self.Value1.returnPressed.connect(update_result1)
         self.gridLayout_2.addWidget(self.Value1, 1, 0, 1, 1)
-        self.ClearButton = QtWidgets.QPushButton(self.gridLayoutWidget)
-        self.ClearButton.pressed.connect(ClearButton)
+        self.clr_button = QtWidgets.QPushButton(self.gridLayoutWidget)
+        self.clr_button.pressed.connect(clr_button)
         font = QtGui.QFont()
         font.setFamily("Comic Sans MS")
         font.setPointSize(9)
-        self.ClearButton.setFont(font)
-        self.ClearButton.setObjectName("ClearButton")
-        self.gridLayout_2.addWidget(self.ClearButton, 6, 1, 1, 1)
+        self.clr_button.setFont(font)
+        self.clr_button.setObjectName("clr_button")
+        self.gridLayout_2.addWidget(self.clr_button, 6, 1, 1, 1)
         self.LoadButton = QtWidgets.QPushButton(self.gridLayoutWidget)
         font = QtGui.QFont()
         font.setFamily("Comic Sans MS")
@@ -123,7 +127,7 @@ class Ui_MainWindow(object):
             QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.Value2.setClearButtonEnabled(False)
         self.Value2.setObjectName("Value2")
-        self.Value2.returnPressed.connect(UpdateResult2)
+        self.Value2.returnPressed.connect(update_result2)
         self.gridLayout_2.addWidget(self.Value2, 1, 1, 1, 1)
         self.lcdNumber2 = QtWidgets.QLCDNumber(self.gridLayoutWidget)
         font = QtGui.QFont()
@@ -187,7 +191,7 @@ class Ui_MainWindow(object):
             "MainWindow", "<html><head/><body><p align=\"right\"><br/></p></body></html>"))
         self.Value1.setWhatsThis(_translate(
             "MainWindow", "<html><head/><body><p align=\"right\"><br/></p></body></html>"))
-        self.ClearButton.setText(_translate("MainWindow", "Clear"))
+        self.clr_button.setText(_translate("MainWindow", "Clear"))
         self.LoadButton.setText(_translate("MainWindow", "Load"))
         self.comboBox.setToolTip(_translate(
             "MainWindow", "<html><head/><body><p align=\"center\"><br/></p></body></html>"))
@@ -199,29 +203,125 @@ class Ui_MainWindow(object):
             "MainWindow", "<html><head/><body><p align=\"right\"><br/></p></body></html>"))
 
 
-def UpdateResult1():  # po wpisaniu kwoty i wcisnieciu enter kolumna 1
+def update_json1():
+    try:
+        with open(f'data{current_year}.json', 'r') as f:
+            json_object = json.load(f)
+            json_object[f'{current_month}1'].append(row1[-1])
+            print(row1)
+
+        with open(f'data{current_year}.json', 'w') as fp:
+            json.dump(json_object, fp, indent=2)
+    except FileNotFoundError:
+        with open(f'data{current_year}.json', 'w') as fp:
+            months = {
+                "January1": [],
+                "February1": [],
+                "March1": [],
+                "April1": [],
+                "May1": [],
+                "June1": [],
+                "July1": [],
+                "August1": [],
+                "September1": [],
+                "October1": [],
+                "November1": [],
+                "December1": [],
+                "January2": [],
+                "February2": [],
+                "March2": [],
+                "April2": [],
+                "May2": [],
+                "June2": [],
+                "July2": [],
+                "August2": [],
+                "September2": [],
+                "October2": [],
+                "November2": [],
+                "December2": []
+            }
+            json.dump(months, fp, indent=2)
+        with open(f'data{current_year}.json', 'r') as f:
+            json_object = json.load(f)
+            json_object[f'{current_month}1'].append(row1[-1])
+            print(row1)
+
+        with open(f'data{current_year}.json', 'w') as fp:
+            json.dump(json_object, fp, indent=2)
+
+
+def update_json2():
+    try:
+        with open(f'data{current_year}.json', 'r') as f:
+            json_object = json.load(f)
+            json_object[f'{current_month}2'].append(row2[-1])
+            print(row2)
+
+        with open(f'data{current_year}.json', 'w') as fp:
+            json.dump(json_object, fp, indent=2)
+    except FileNotFoundError:
+        with open(f'data{current_year}.json', 'w') as fp:
+            months = {
+                "January1": [],
+                "February1": [],
+                "March1": [],
+                "April1": [],
+                "May1": [],
+                "June1": [],
+                "July1": [],
+                "August1": [],
+                "September1": [],
+                "October1": [],
+                "November1": [],
+                "December1": [],
+                "January2": [],
+                "February2": [],
+                "March2": [],
+                "April2": [],
+                "May2": [],
+                "June2": [],
+                "July2": [],
+                "August2": [],
+                "September2": [],
+                "October2": [],
+                "November2": [],
+                "December2": []
+            }
+            json.dump(months, fp, indent=2)
+        with open(f'data{current_year}.json', 'r') as f:
+            json_object = json.load(f)
+            json_object[f'{current_month}2'].append(row2[-1])
+            print(row2)
+
+        with open(f'data{current_year}.json', 'w') as fp:
+            json.dump(json_object, fp, indent=2)
+
+
+def update_result1():  # po wpisaniu kwoty i wcisnieciu enter kolumna 1
     text1 = str(ui.Value1.text())
     ui.col1.append(text1 + " PLN")
     row1.append(int(text1))
     ui.Value1.clear()
     sum1 = sum(row1, 0)
     ui.lcdNumber1.display(sum1)
-    DifferenceUpdate()
+    diff_update()
+    update_json1()
     # SaveDataTxt1()
 
 
-def UpdateResult2():  # po wpisaniu kwoty i wcisnieciu enter kolumna 2
+def update_result2():  # po wpisaniu kwoty i wcisnieciu enter kolumna 2
     text2 = str(ui.Value2.text())
     ui.col2.append(text2 + " PLN")
     row2.append(int(text2))
     ui.Value2.clear()
     sum2 = sum(row2, 0)
     ui.lcdNumber2.display(sum2)
-    DifferenceUpdate()
+    diff_update()
+    update_json2()
     # SaveDataTxt1()
 
 
-def DifferenceUpdate():  # roznica miedzy kolumnami
+def diff_update():  # roznica miedzy kolumnami
     substraction = ((sum(row1, 0)) - (sum(row2, 0)))
     if substraction == 0:
         ui.Difference.setText("Jesteśmy kwita")
@@ -231,13 +331,11 @@ def DifferenceUpdate():  # roznica miedzy kolumnami
         ui.Difference.setText("Ola jest winna:  " + str(-substraction))
 
 
-def ClearButton():
+def clr_button():
     ui.col1.clear()
     ui.col1.setAlignment(QtCore.Qt.AlignRight)
     ui.col2.clear()
     ui.col2.setAlignment(QtCore.Qt.AlignRight)
-    row1.clear()
-    row2.clear()
     ui.Difference.clear()
     ui.lcdNumber1.display(0)
     ui.lcdNumber2.display(0)
