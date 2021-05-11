@@ -77,6 +77,7 @@ class Ui_MainWindow(object):
         self.lcdNumber1.setSegmentStyle(QtWidgets.QLCDNumber.Flat)
         self.lcdNumber1.setObjectName("lcdNumber1")
         self.gridLayout_2.addWidget(self.lcdNumber1, 3, 0, 1, 1)
+
         self.Value1 = QtWidgets.QLineEdit(self.gridLayoutWidget)
         font = QtGui.QFont()
         font.setFamily("Comic Sans MS")
@@ -89,7 +90,9 @@ class Ui_MainWindow(object):
         self.Value1.setAlignment(
             QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.Value1.setObjectName("Value1")
+        self.Value1.setValidator(QtGui.QIntValidator())
         self.Value1.returnPressed.connect(update_result1)
+        self.Value1.setMaxLength(4)
         self.gridLayout_2.addWidget(self.Value1, 1, 0, 1, 1)
         self.clr_button = QtWidgets.QPushButton(self.gridLayoutWidget)
         self.clr_button.pressed.connect(clr_button)
@@ -100,6 +103,7 @@ class Ui_MainWindow(object):
         self.clr_button.setObjectName("clr_button")
         self.gridLayout_2.addWidget(self.clr_button, 6, 1, 1, 1)
         self.LoadButton = QtWidgets.QPushButton(self.gridLayoutWidget)
+        self.LoadButton.pressed.connect(load_button)
         font = QtGui.QFont()
         font.setFamily("Comic Sans MS")
         font.setPointSize(9)
@@ -114,8 +118,21 @@ class Ui_MainWindow(object):
         font.setPointSize(11)
         self.comboBox.setFont(font)
         self.comboBox.setObjectName("comboBox")
+        self.comboBox.addItem("January")
+        self.comboBox.addItem("February")
+        self.comboBox.addItem("March")
+        self.comboBox.addItem("April")
+        self.comboBox.addItem("May")
+        self.comboBox.addItem("June")
+        self.comboBox.addItem("July")
+        self.comboBox.addItem("August")
+        self.comboBox.addItem("September")
+        self.comboBox.addItem("October")
+        self.comboBox.addItem("November")
+        self.comboBox.addItem("December")
         self.gridLayout_2.addWidget(self.comboBox, 5, 0, 2, 1)
         self.Value2 = QtWidgets.QLineEdit(self.gridLayoutWidget)
+
         font = QtGui.QFont()
         font.setFamily("Comic Sans MS")
         font.setPointSize(12)
@@ -127,7 +144,9 @@ class Ui_MainWindow(object):
             QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.Value2.setClearButtonEnabled(False)
         self.Value2.setObjectName("Value2")
+        self.Value2.setValidator(QtGui.QIntValidator())
         self.Value2.returnPressed.connect(update_result2)
+        self.Value2.setMaxLength(4)
         self.gridLayout_2.addWidget(self.Value2, 1, 1, 1, 1)
         self.lcdNumber2 = QtWidgets.QLCDNumber(self.gridLayoutWidget)
         font = QtGui.QFont()
@@ -203,7 +222,26 @@ class Ui_MainWindow(object):
             "MainWindow", "<html><head/><body><p align=\"right\"><br/></p></body></html>"))
 
 
-def update_json1():
+def load_values_at_start():
+    with open(f'data{current_year}.json', 'r') as f:
+        json_object = json.load(f)
+        for data in json_object[f'{current_month}1']:
+            ui.col1.append(str(data) + " PLN")
+            row1.append(data)
+            ui.comboBox.setCurrentText(f'{current_month}')
+            sum1 = sum(row1, 0)
+            ui.lcdNumber1.display(sum1)
+            diff_update()
+
+        for data in json_object[f'{current_month}2']:
+            ui.col2.append(str(data) + " PLN")
+            row2.append(data)
+            sum2 = sum(row2, 0)
+            ui.lcdNumber2.display(sum2)
+            diff_update()
+
+
+def update_json1():  # dla 1 kolumny
     try:
         with open(f'data{current_year}.json', 'r') as f:
             json_object = json.load(f)
@@ -250,7 +288,7 @@ def update_json1():
             json.dump(json_object, fp, indent=2)
 
 
-def update_json2():
+def update_json2():  # dla 2 kolumny
     try:
         with open(f'data{current_year}.json', 'r') as f:
             json_object = json.load(f)
@@ -306,7 +344,6 @@ def update_result1():  # po wpisaniu kwoty i wcisnieciu enter kolumna 1
     ui.lcdNumber1.display(sum1)
     diff_update()
     update_json1()
-    # SaveDataTxt1()
 
 
 def update_result2():  # po wpisaniu kwoty i wcisnieciu enter kolumna 2
@@ -318,7 +355,6 @@ def update_result2():  # po wpisaniu kwoty i wcisnieciu enter kolumna 2
     ui.lcdNumber2.display(sum2)
     diff_update()
     update_json2()
-    # SaveDataTxt1()
 
 
 def diff_update():  # roznica miedzy kolumnami
@@ -339,6 +375,217 @@ def clr_button():
     ui.Difference.clear()
     ui.lcdNumber1.display(0)
     ui.lcdNumber2.display(0)
+    row1.clear()
+    row2.clear()
+
+
+def load_button():  # wczytywanie miesięcy z combobox'a
+    if ui.comboBox.currentText() == 'January':
+        clr_button()
+
+        with open(f'data{current_year}.json', 'r') as f:
+            json_object = json.load(f)
+            for data in json_object['January1']:
+                ui.col1.append(str(data) + " PLN")
+                row1.append(data)
+                sum1 = sum(row1, 0)
+                ui.lcdNumber1.display(sum1)
+                diff_update()
+            for data in json_object['January2']:
+                ui.col2.append(str(data) + " PLN")
+                row2.append(data)
+                sum2 = sum(row2, 0)
+                ui.lcdNumber2.display(sum2)
+                diff_update()
+    elif ui.comboBox.currentText() == 'February':
+        clr_button()
+
+        with open(f'data{current_year}.json', 'r') as f:
+            json_object = json.load(f)
+            for data in json_object['February1']:
+                ui.col1.append(str(data) + " PLN")
+                row1.append(data)
+                sum1 = sum(row1, 0)
+                ui.lcdNumber1.display(sum1)
+                diff_update()
+            for data in json_object['February2']:
+                ui.col2.append(str(data) + " PLN")
+                row2.append(data)
+                sum2 = sum(row2, 0)
+                ui.lcdNumber2.display(sum2)
+                diff_update()
+    elif ui.comboBox.currentText() == 'March':
+        clr_button()
+
+        with open(f'data{current_year}.json', 'r') as f:
+            json_object = json.load(f)
+            for data in json_object['March1']:
+                ui.col1.append(str(data) + " PLN")
+                row1.append(data)
+                sum1 = sum(row1, 0)
+                ui.lcdNumber1.display(sum1)
+                diff_update()
+            for data in json_object['March2']:
+                ui.col2.append(str(data) + " PLN")
+                row2.append(data)
+                sum2 = sum(row2, 0)
+                ui.lcdNumber2.display(sum2)
+                diff_update()
+    elif ui.comboBox.currentText() == 'April':
+        clr_button()
+
+        with open(f'data{current_year}.json', 'r') as f:
+            json_object = json.load(f)
+            for data in json_object['April1']:
+                ui.col1.append(str(data) + " PLN")
+                row1.append(data)
+                sum1 = sum(row1, 0)
+                ui.lcdNumber1.display(sum1)
+                diff_update()
+            for data in json_object['April2']:
+                ui.col2.append(str(data) + " PLN")
+                row2.append(data)
+                sum2 = sum(row2, 0)
+                ui.lcdNumber2.display(sum2)
+                diff_update()
+
+    elif ui.comboBox.currentText() == 'May':
+        clr_button()
+
+        with open(f'data{current_year}.json', 'r') as f:
+            json_object = json.load(f)
+            for data in json_object['May1']:
+                ui.col1.append(str(data) + " PLN")
+                row1.append(data)
+                sum1 = sum(row1, 0)
+                ui.lcdNumber1.display(sum1)
+                diff_update()
+            for data in json_object['May2']:
+                ui.col2.append(str(data) + " PLN")
+                row2.append(data)
+                sum2 = sum(row2, 0)
+                ui.lcdNumber2.display(sum2)
+                diff_update()
+
+    elif ui.comboBox.currentText() == 'June':
+        clr_button()
+
+        with open(f'data{current_year}.json', 'r') as f:
+            json_object = json.load(f)
+            for data in json_object['June1']:
+                ui.col1.append(str(data) + " PLN")
+                row1.append(data)
+                sum1 = sum(row1, 0)
+                ui.lcdNumber1.display(sum1)
+                diff_update()
+            for data in json_object['June2']:
+                ui.col2.append(str(data) + " PLN")
+                row2.append(data)
+                sum2 = sum(row2, 0)
+                ui.lcdNumber2.display(sum2)
+                diff_update()
+    elif ui.comboBox.currentText() == 'July':
+        clr_button()
+
+        with open(f'data{current_year}.json', 'r') as f:
+            json_object = json.load(f)
+            for data in json_object['July1']:
+                ui.col1.append(str(data) + " PLN")
+                row1.append(data)
+                sum1 = sum(row1, 0)
+                ui.lcdNumber1.display(sum1)
+                diff_update()
+            for data in json_object['July2']:
+                ui.col2.append(str(data) + " PLN")
+                row2.append(data)
+                sum2 = sum(row2, 0)
+                ui.lcdNumber2.display(sum2)
+                diff_update()
+    elif ui.comboBox.currentText() == 'August':
+        clr_button()
+
+        with open(f'data{current_year}.json', 'r') as f:
+            json_object = json.load(f)
+            for data in json_object['August1']:
+                ui.col1.append(str(data) + " PLN")
+                row1.append(data)
+                sum1 = sum(row1, 0)
+                ui.lcdNumber1.display(sum1)
+                diff_update()
+            for data in json_object['August2']:
+                ui.col2.append(str(data) + " PLN")
+                row2.append(data)
+                sum2 = sum(row2, 0)
+                ui.lcdNumber2.display(sum2)
+                diff_update()
+    elif ui.comboBox.currentText() == 'September':
+        clr_button()
+
+        with open(f'data{current_year}.json', 'r') as f:
+            json_object = json.load(f)
+            for data in json_object['September1']:
+                ui.col1.append(str(data) + " PLN")
+                row1.append(data)
+                sum1 = sum(row1, 0)
+                ui.lcdNumber1.display(sum1)
+                diff_update()
+            for data in json_object['September2']:
+                ui.col2.append(str(data) + " PLN")
+                row2.append(data)
+                sum2 = sum(row2, 0)
+                ui.lcdNumber2.display(sum2)
+                diff_update()
+    elif ui.comboBox.currentText() == 'October':
+        clr_button()
+
+        with open(f'data{current_year}.json', 'r') as f:
+            json_object = json.load(f)
+            for data in json_object['October1']:
+                ui.col1.append(str(data) + " PLN")
+                row1.append(data)
+                sum1 = sum(row1, 0)
+                ui.lcdNumber1.display(sum1)
+                diff_update()
+            for data in json_object['October2']:
+                ui.col2.append(str(data) + " PLN")
+                row2.append(data)
+                sum2 = sum(row2, 0)
+                ui.lcdNumber2.display(sum2)
+                diff_update()
+    elif ui.comboBox.currentText() == 'November':
+        clr_button()
+
+        with open(f'data{current_year}.json', 'r') as f:
+            json_object = json.load(f)
+            for data in json_object['November1']:
+                ui.col1.append(str(data) + " PLN")
+                row1.append(data)
+                sum1 = sum(row1, 0)
+                ui.lcdNumber1.display(sum1)
+                diff_update()
+            for data in json_object['November2']:
+                ui.col2.append(str(data) + " PLN")
+                row2.append(data)
+                sum2 = sum(row2, 0)
+                ui.lcdNumber2.display(sum2)
+                diff_update()
+    elif ui.comboBox.currentText() == 'December':
+        clr_button()
+
+        with open(f'data{current_year}.json', 'r') as f:
+            json_object = json.load(f)
+            for data in json_object['December1']:
+                ui.col1.append(str(data) + " PLN")
+                row1.append(data)
+                sum1 = sum(row1, 0)
+                ui.lcdNumber1.display(sum1)
+                diff_update()
+            for data in json_object['December2']:
+                ui.col2.append(str(data) + " PLN")
+                row2.append(data)
+                sum2 = sum(row2, 0)
+                ui.lcdNumber2.display(sum2)
+                diff_update()
 
 
 if __name__ == "__main__":
@@ -348,4 +595,5 @@ if __name__ == "__main__":
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
     MainWindow.show()
+    load_values_at_start()
     sys.exit(app.exec_())
